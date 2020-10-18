@@ -74,7 +74,7 @@ using namespace std;
 
 //Global options
 bool _additional_method_sys = false;
-const float signal_scaling = 0.10;
+const float signal_scaling = 1.0;
 TString dummy_syst = "0.01";
 TString xvar = "nSelectedAODCaloJetTag";
 //TString xvar = "nSelectedAODCaloJetTagSB7";
@@ -82,10 +82,11 @@ TString xvar = "nSelectedAODCaloJetTag";
 //TString xvar_suffix = "_log_eemumu_zpt65";
 //TString xvar_suffix = "_log_eemumu";
 //TString xvar_suffix = "_log";
-TString xvar_suffix = "_mockup_sys_hadd";
+//TString xvar_suffix = "_mockup_sys_hadd";
+TString xvar_suffix = "SB7_mockup_sys_hadd_PreApp";
 TString signal_string = "Sig_MS55ct100";
-TString data_string = "bkgtotal"; //"Data";
-//TString data_string = "Data";
+//TString data_string = "bkgtotal"; //"Data";
+TString data_string = "Data";
 vector<TString> sys_vec;
 
 
@@ -569,12 +570,12 @@ void build_twomuzh(RooWorkspace* wspace, TString light_est = "DY"){
   const int n_systematics = signal_systematic.size();
 
   //all systematif effects
-  std::string signal_logN_amax[3] = {"TMath::Power(1+0.001,@0)","TMath::Power(1-0.001,@0)","TMath::Power(1-0.001,@0)"};
-  std::string signal_logN_ip[3]   = {"TMath::Power(1+0.05,@0)","TMath::Power(1-0.14,@0)","TMath::Power(1-0.25,@0)"};//correlated bin-by-bin effect
-  std::string signal_logN_ta[3]   = {"TMath::Power(1-0.03,@0)","TMath::Power(1+0.05,@0)","TMath::Power(1+0.15,@0)"};//correlated bin-by-bin effect
-  std::string signal_logN_egs[3]  = {"TMath::Power(1+0.01,@0)","TMath::Power(1+0.01,@0)","TMath::Power(1+0.01,@0)"};//correlated bin-by-bin effect
-  std::string signal_logN_mes[3]  = {"TMath::Power(1+0.01,@0)","TMath::Power(1+0.01,@0)","TMath::Power(1+0.01,@0)"};//correlated bin-by-bin effect
-  std::string signal_logN_jes[3]  = {"TMath::Power(1+0.2,@0)","TMath::Power(1+0.2,@0)","TMath::Power(1+0.2,@0)"};//correlated bin-by-bin effect
+  std::string signal_logN_amax[3] = {"TMath::Power(1+0.001,@","TMath::Power(1-0.001,@","TMath::Power(1-0.001,@"};
+  std::string signal_logN_ip[3]   = {"TMath::Power(1+0.05,@","TMath::Power(1-0.14,@","TMath::Power(1-0.25,@"};//correlated bin-by-bin effect
+  std::string signal_logN_ta[3]   = {"TMath::Power(1-0.03,@","TMath::Power(1+0.05,@","TMath::Power(1+0.15,@"};//correlated bin-by-bin effect
+  std::string signal_logN_egs[3]  = {"TMath::Power(1+0.01,@","TMath::Power(1+0.01,@","TMath::Power(1+0.01,@"};//correlated bin-by-bin effect
+  std::string signal_logN_mes[3]  = {"TMath::Power(1+0.01,@","TMath::Power(1+0.01,@","TMath::Power(1+0.01,@"};//correlated bin-by-bin effect
+  std::string signal_logN_jes[3]  = {"TMath::Power(1+0.04,@","TMath::Power(1+0.04,@","TMath::Power(1+0.08,@"};//correlated bin-by-bin effect
   std::map<std::string, std::string* > systematic_map;
   systematic_map["AMax"]  = signal_logN_amax;
   systematic_map["IPSig"] = signal_logN_ip;
@@ -583,40 +584,65 @@ void build_twomuzh(RooWorkspace* wspace, TString light_est = "DY"){
   systematic_map["MES"]   = signal_logN_mes;
   systematic_map["JES"]   = signal_logN_jes;
 
-  RooRealVar*    rrv_signal_twomuzh_systematic[n_systematics];
-  RooFormulaVar* rfv_signal_twomuzh_systematic_bin1[n_systematics];
-  RooFormulaVar* rfv_signal_twomuzh_systematic_bin2[n_systematics];
-  RooFormulaVar* rfv_signal_twomuzh_systematic_bin3[n_systematics];
+  ///RooRealVar*    rrv_signal_twomuzh_systematic[n_systematics];
+  RooFormulaVar* rfv_signal_twomuzh_systematic_bin1;//[n_systematics];
+  RooFormulaVar* rfv_signal_twomuzh_systematic_bin2;//[n_systematics];
+  RooFormulaVar* rfv_signal_twomuzh_systematic_bin3;//[n_systematics];
 
   RooArgList signal_twomuzh_sys_arglist[3];//one per bin
   signal_twomuzh_sys_arglist[0].add(signal_twomuzh_central_bin1);
   signal_twomuzh_sys_arglist[1].add(signal_twomuzh_central_bin2);
   signal_twomuzh_sys_arglist[2].add(signal_twomuzh_central_bin3);
 
+///  RooArgList signal_twomuzh_sys_arglist_centralVal[3];//one per bin
+///  signal_twomuzh_sys_arglist_centralVal[0].add(signal_twomuzh_central_bin1);
+///  signal_twomuzh_sys_arglist_centralVal[1].add(signal_twomuzh_central_bin2);
+///  signal_twomuzh_sys_arglist_centralVal[2].add(signal_twomuzh_central_bin3);
+
+
+  std::string rfv_sys_bin1 = "@0";
+  std::string rfv_sys_bin2 = "@0";
+  std::string rfv_sys_bin3 = "@0";
+
   int systematic_i_ctr = 0;
   for ( auto &sys_map : systematic_map )
   {
-    std::cout << "====> SYS NAME: " << sys_map.first << std::endl;
-    std::string rrv_sys_name      = "rrv_signal_twomuzh_"+sys_map.first;//one RooRealVar per systematic
-    std::cout << "====> SYS NAME: " << rrv_sys_name << std::endl;
-    std::string rfv_sys_name_bin1 = "rrv_signal_twomuzh_"+sys_map.first+"_bin1";
-    std::string rfv_sys_name_bin2 = "rrv_signal_twomuzh_"+sys_map.first+"_bin2";
-    std::string rfv_sys_name_bin3 = "rrv_signal_twomuzh_"+sys_map.first+"_bin3";
-    rrv_signal_twomuzh_systematic[systematic_i_ctr]      = new RooRealVar(rrv_sys_name.c_str(),rrv_sys_name.c_str(), 0.0);//each systemetic is controlled by 1 nuissance parameter
-    rrv_signal_twomuzh_systematic[systematic_i_ctr]->setConstant(kTRUE);
-    //RooFormulaVars 1 per ntag-bin
-    rfv_signal_twomuzh_systematic_bin1[systematic_i_ctr] = new RooFormulaVar(rfv_sys_name_bin1.c_str(), rfv_sys_name_bin1.c_str(),
-    sys_map.second[0].c_str(),RooArgList(*rrv_signal_twomuzh_systematic[systematic_i_ctr]));
-    rfv_signal_twomuzh_systematic_bin2[systematic_i_ctr] = new RooFormulaVar(rfv_sys_name_bin2.c_str(), rfv_sys_name_bin2.c_str(),
-    sys_map.second[1].c_str(),RooArgList(*rrv_signal_twomuzh_systematic[systematic_i_ctr]));
-    rfv_signal_twomuzh_systematic_bin3[systematic_i_ctr] = new RooFormulaVar(rfv_sys_name_bin3.c_str(), rfv_sys_name_bin3.c_str(),
-    sys_map.second[2].c_str(),RooArgList(*rrv_signal_twomuzh_systematic[systematic_i_ctr]));
+    ///std::cout << "====> SYS NAME: " << sys_map.first << std::endl;
+    ///std::string rrv_sys_name      = "rrv_signal_twomuzh_"+sys_map.first;//one RooRealVar per systematic
+    ///std::cout << "====> SYS NAME: " << rrv_sys_name << std::endl;
+    ///std::string rfv_sys_name_bin1 = "rrv_signal_twomuzh_"+sys_map.first+"_bin1";
+    ///std::string rfv_sys_name_bin2 = "rrv_signal_twomuzh_"+sys_map.first+"_bin2";
+    ///std::string rfv_sys_name_bin3 = "rrv_signal_twomuzh_"+sys_map.first+"_bin3";
+    ///rrv_signal_twomuzh_systematic[systematic_i_ctr]      = new RooRealVar(rrv_sys_name.c_str(),rrv_sys_name.c_str(), 0.0);//each systemetic is controlled by 1 nuissance parameter
+    ///rrv_signal_twomuzh_systematic[systematic_i_ctr]->setConstant(kTRUE);
+    /////RooFormulaVars 1 per ntag-bin
+    ///rfv_signal_twomuzh_systematic_bin1[systematic_i_ctr] = new RooFormulaVar(rfv_sys_name_bin1.c_str(), rfv_sys_name_bin1.c_str(),
+    ///sys_map.second[0].c_str(),RooArgList(*rrv_signal_twomuzh_systematic[systematic_i_ctr]));
+    ///rfv_signal_twomuzh_systematic_bin2[systematic_i_ctr] = new RooFormulaVar(rfv_sys_name_bin2.c_str(), rfv_sys_name_bin2.c_str(),
+    ///sys_map.second[1].c_str(),RooArgList(*rrv_signal_twomuzh_systematic[systematic_i_ctr]));
+    ///rfv_signal_twomuzh_systematic_bin3[systematic_i_ctr] = new RooFormulaVar(rfv_sys_name_bin3.c_str(), rfv_sys_name_bin3.c_str(),
+    ///sys_map.second[2].c_str(),RooArgList(*rrv_signal_twomuzh_systematic[systematic_i_ctr]));
 
-    //add to RooArgList
-    signal_twomuzh_sys_arglist[0].add(*rfv_signal_twomuzh_systematic_bin1[systematic_i_ctr]);
-    signal_twomuzh_sys_arglist[1].add(*rfv_signal_twomuzh_systematic_bin2[systematic_i_ctr]);
-    signal_twomuzh_sys_arglist[2].add(*rfv_signal_twomuzh_systematic_bin3[systematic_i_ctr]);
-    systematic_i_ctr++;
+    /////add to RooArgList
+    ///signal_twomuzh_sys_arglist[0].add(*rfv_signal_twomuzh_systematic_bin1[systematic_i_ctr]);
+    ///signal_twomuzh_sys_arglist[1].add(*rfv_signal_twomuzh_systematic_bin2[systematic_i_ctr]);
+    ///signal_twomuzh_sys_arglist[2].add(*rfv_signal_twomuzh_systematic_bin3[systematic_i_ctr]);
+    std::string sys_map_first_tmp = "rrv_"+sys_map.first;
+    RooRealVar* rrv_syst = wspace->var(sys_map_first_tmp.c_str());   
+    signal_twomuzh_sys_arglist[0].add(RooArgList(*rrv_syst));
+    signal_twomuzh_sys_arglist[1].add(RooArgList(*rrv_syst));
+    signal_twomuzh_sys_arglist[2].add(RooArgList(*rrv_syst));
+    if  (rfv_sys_bin1 == "") rfv_sys_bin1 = sys_map.second[0];  
+    else                     rfv_sys_bin1 = rfv_sys_bin1+"*"+sys_map.second[0]+std::to_string(systematic_i_ctr+1)+")";
+    if  (rfv_sys_bin2 == "") rfv_sys_bin2 = sys_map.second[1];  
+    else                     rfv_sys_bin2 = rfv_sys_bin2+"*"+sys_map.second[1]+std::to_string(systematic_i_ctr+1)+")";
+    if  (rfv_sys_bin3 == "") rfv_sys_bin3 = sys_map.second[2];  
+    else                     rfv_sys_bin3 = rfv_sys_bin3+"*"+sys_map.second[2]+std::to_string(systematic_i_ctr+1)+")";
+   std::cout<< "Daniel Edit"<<std::endl;
+   std::cout<<rfv_sys_bin1<<std::endl;
+   std::cout<<rfv_sys_bin2<<std::endl;
+   std::cout<<rfv_sys_bin3<<std::endl;
+   systematic_i_ctr++;
   }
 
   //RooRealVar rrv_signal_zh_amax_sys("rrv_signal_zh_amax_sys","rrv_signal_zh_amax_sys", 0.0);//controlled by 1 nuissance parameter
@@ -627,12 +653,14 @@ void build_twomuzh(RooWorkspace* wspace, TString light_est = "DY"){
   //signal_logN_amax[1].c_str(), RooArgList(rrv_signal_zh_amax_sys));
   //RooFormulaVar rfv_signal_twomuzh_amax_sys_bin3("rfv_signal_twomuzh_amax_sys_bin3", "amax systematic (log-normal) bin3",
   //signal_logN_amax[2].c_str(), RooArgList(rrv_signal_zh_amax_sys));
-
-
-
-  RooFormulaVar signal_twomuzh_bin1("signal_twomuzh_bin1", "signal yield in twomuzh bin1", "@0*@1*@2*@3*@4*@5*@6", signal_twomuzh_sys_arglist[0]);//central_value*(1+unc)^sys_i
-  RooFormulaVar signal_twomuzh_bin2("signal_twomuzh_bin2", "signal yield in twomuzh bin2", "@0*@1*@2*@3*@4*@5*@6", signal_twomuzh_sys_arglist[1]);//central_value*(1+unc)^amax_sys
-  RooFormulaVar signal_twomuzh_bin3("signal_twomuzh_bin3", "signal yield in twomuzh bin3", "@0*@1*@2*@3*@4*@5*@6", signal_twomuzh_sys_arglist[2]);//central_value*(1+unc)^amax_sys
+  
+  std::cout<<"Sys Arg List signal1: "<<signal_twomuzh_sys_arglist[0]<<std::endl;
+  std::cout<<"Sys Arg List signal2: "<<signal_twomuzh_sys_arglist[1]<<std::endl;
+  std::cout<<"Sys Arg List signal3: "<<signal_twomuzh_sys_arglist[2]<<std::endl;
+  
+  RooFormulaVar signal_twomuzh_bin1("signal_twomuzh_bin1", "signal yield in twomuzh bin1", rfv_sys_bin1.c_str(), signal_twomuzh_sys_arglist[0]);//central_value*(1+unc)^sys_i
+  RooFormulaVar signal_twomuzh_bin2("signal_twomuzh_bin2", "signal yield in twomuzh bin2", rfv_sys_bin2.c_str(), signal_twomuzh_sys_arglist[1]);//central_value*(1+unc)^amax_sys
+  RooFormulaVar signal_twomuzh_bin3("signal_twomuzh_bin3", "signal yield in twomuzh bin3", rfv_sys_bin3.c_str(), signal_twomuzh_sys_arglist[2]);//central_value*(1+unc)^amax_sys
 
   std::cout << "================begin signal systemetic =============" << std::endl;
   signal_twomuzh_bin1.Print();
@@ -1270,8 +1298,7 @@ int main( int argc, char* argv[] ){
   sys_vec.push_back("TA");//use
   sys_vec.push_back("EGS");//use
   sys_vec.push_back("MES");//use
-  //sys_vec.push_back("JES");
-
+  sys_vec.push_back("JES");
   // Output file and workspace
   TFile *fOut = new TFile("param_ws.root","RECREATE");
   RooWorkspace* wspace = new RooWorkspace("wspace","wspace");

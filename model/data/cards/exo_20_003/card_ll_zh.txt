@@ -29,6 +29,7 @@ rate     1        1         1       -1
 #uncertainties
 -------------------------------------------------------------------------------------------------------------------------------------------
 lumi    lnN   -    -   1.03    1.03
+Trigger    lnN   -    -   1.01    1.01
 
 #gaussian contrained parameters
 #################################
@@ -56,15 +57,16 @@ rrv_TA param 0 1
 ###muon and electron energy scale
 rrv_MES param 0 1
 rrv_EGS param 0 1
+rrv_JES param 0 1
 
 #########################################
 ###signal systematic
 #########################################
 #tagging variables
-rrv_signal_twomuzh_AMax		param 0 1
-rrv_signal_twomuzh_IPSig	param 0 1
-rrv_signal_twomuzh_TA		param 0 1
+#rrv_signal_twomuzh_AMax		param 0 1
+#rrv_signal_twomuzh_IPSig	param 0 1
+#rrv_signal_twomuzh_TA		param 0 1
 #rrv_signal_twomuzh_JES	        param 0 1
-#muons an electron energy scale
-rrv_signal_twomuzh_MES		param 0 1
-rrv_signal_twomuzh_EGS		param 0 1
+##muons an electron energy scale
+#rrv_signal_twomuzh_MES		param 0 1
+#rrv_signal_twomuzh_EGS		param 0 1

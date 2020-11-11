@@ -554,7 +554,7 @@ void build_twomuzh(RooWorkspace* wspace, TString light_est = "DY"){
   std::string signal_logN_ta[3]   = {"TMath::Power(1-0.03,@0)","TMath::Power(1+0.05,@0)","TMath::Power(1+0.15,@0)"};//correlated bin-by-bin effect
   std::string signal_logN_egs[3]  = {"TMath::Power(1+0.01,@0)","TMath::Power(1+0.01,@0)","TMath::Power(1+0.01,@0)"};//correlated bin-by-bin effect
   std::string signal_logN_mes[3]  = {"TMath::Power(1+0.01,@0)","TMath::Power(1+0.01,@0)","TMath::Power(1+0.01,@0)"};//correlated bin-by-bin effect
-  std::string signal_logN_jes[3]  = {"TMath::Power(1+0.2,@0)","TMath::Power(1+0.2,@0)","TMath::Power(1+0.2,@0)"};//correlated bin-by-bin effect
+  std::string signal_logN_jes[3]  = {"TMath::Power(1+0.04,@0)","TMath::Power(1+0.04,@0)","TMath::Power(1+0.09,@0)"};//correlated bin-by-bin effect
   std::map<std::string, std::string* > systematic_map;
   systematic_map["AMax"]  = signal_logN_amax;
   systematic_map["IPSig"] = signal_logN_ip;
@@ -1250,7 +1250,7 @@ int main( int argc, char* argv[] ){
   sys_vec.push_back("TA");//use
   sys_vec.push_back("EGS");//use
   sys_vec.push_back("MES");//use
-  //sys_vec.push_back("JES");
+  sys_vec.push_back("JES");
 
   // Output file and workspace
   TFile *fOut = new TFile("param_ws.root","RECREATE");

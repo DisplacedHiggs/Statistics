@@ -18,6 +18,8 @@ TARGET4 = MakeWorkspace_VR_SYS
 TARGET5 = MakeMockupSystematics
 TARGET6 = MakeWorkspace_VR_Merged_EMu
 TARGET7 = MakeWorkspace_VR_SYS_ALL_TF
+TARGET8 = MakeWorkspace_VR_SYS_ALL_TF_EMuCombo
+TARGET9 = MakeWorkspace_VR_SYS_ALL_TF_EMuCombo_Reparam
 
 SRC = $(REPO)/build_ws.cc $(COMMON)/src/CommandLineInput.cc
 SRC2 = $(REPO)/app/build_ws_validation_region.cc $(COMMON)/src/CommandLineInput.cc
@@ -26,6 +28,8 @@ SRC4 = $(REPO)/app/build_ws_validation_region_systematics.cc $(COMMON)/src/Comma
 SRC5 = $(REPO)/app/make_mockup_systematics.cc $(COMMON)/src/CommandLineInput.cc
 SRC6 = $(REPO)/app/build_ws_validation_region_merged_emu.cc $(COMMON)/src/CommandLineInput.cc
 SRC7 = $(REPO)/app/build_ws_validation_region_systematics_all_tf.cc $(COMMON)/src/CommandLineInput.cc
+SRC8 = $(REPO)/app/build_ws_validation_region_systematics_all_tf_EleMuCombo.cc $(COMMON)/src/CommandLineInput.cc
+SRC9 = $(REPO)/app/build_ws_validation_region_systematics_all_tf_EleMuCombo_reparam.cc $(COMMON)/src/CommandLineInput.cc
 
 OBJ = $(SRC:.cc=.o)
 OBJ2 = $(SRC2:.cc=.o)
@@ -34,8 +38,10 @@ OBJ4 = $(SRC4:.cc=.o)
 OBJ5 = $(SRC5:.cc=.o)
 OBJ6 = $(SRC6:.cc=.o)
 OBJ7 = $(SRC7:.cc=.o)
+OBJ8 = $(SRC8:.cc=.o)
+OBJ9 = $(SRC9:.cc=.o)
 
-all : $(TARGET) $(TARGET2) $(TARGET4) $(TARGET5) $(TARGET6) $(TARGET7)
+all : $(TARGET) $(TARGET2) $(TARGET4) $(TARGET5) $(TARGET6) $(TARGET7) $(TARGET8) $(TARGET9)
 
 $(TARGET) : $(OBJ)
 	$(LD) $(CPPFLAGS) -o $(TARGET) $(OBJ) $(LDFLAGS)
@@ -80,10 +86,22 @@ $(TARGET7) : $(OBJ7)
 	@echo $<
 	@echo $^
 
+$(TARGET8) : $(OBJ8)
+	$(LD) $(CPPFLAGS) -o $(TARGET8) $(OBJ8) $(LDFLAGS)
+	@echo $@
+	@echo $<
+	@echo $^
+
+$(TARGET9) : $(OBJ9)
+	$(LD) $(CPPFLAGS) -o $(TARGET9) $(OBJ9) $(LDFLAGS)
+	@echo $@
+	@echo $<
+	@echo $^
+
 %.o : %.cc
 	$(CXX) $(CPPFLAGS) -o $@ -c $<
 	@echo $@
 	@echo $<
 
 clean :
-	rm -f *.o app/*.o src/*.o include/*.o $(TARGET) $(TARGET2) $(TARGET4) $(TARGET5) $(TARGET6) $(TARGET7) $(COMMON)/src/*.o *~
+	rm -f *.o app/*.o src/*.o include/*.o $(TARGET) $(TARGET2) $(TARGET4) $(TARGET5) $(TARGET6) $(TARGET7) $(TARGET8) $(TARGET9) $(COMMON)/src/*.o *~

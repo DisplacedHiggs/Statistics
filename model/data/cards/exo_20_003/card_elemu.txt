@@ -28,6 +28,8 @@ rate     1      -1            -1
 -------------------------------------------------------------------------------------------------------------------------------------------
 lumi    lnN   -    -    1.018
 Trigger    lnN   -    -    1.01
+other_bkg    lnN   -    -    1.99
+dy_bkg    lnN   -    1.99    -
 
 #free floating parameters
 heavy_elemu_bin1 flatParam
